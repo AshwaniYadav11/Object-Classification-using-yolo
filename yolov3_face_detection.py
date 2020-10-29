@@ -373,42 +373,9 @@ labels = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", 
 	"remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator",
 	"book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
 
-from google.colab import files 
-upload = files.upload()
 
-for fn in upload.keys():
-  photo_filename = '/content/' + fn
 
-  # define the expected input shape for the model
-  input_w, input_h = 416, 416
 
-  image, image_w, image_h = load_image_pixels(photo_filename, (input_w, input_h))
-
-  # make prediction
-  yhat = yolov3.predict(image)
-  # summarize the shape of the list of arrays
-  print([a.shape for a in yhat])
-  
-  boxes = list() 
-  for i in range(len(yhat)):
-    # decode the output of the network
-    boxes += decode_netout(yhat[i][0], anchors[i], class_threshold, input_h, input_w)
- 
-  # correct the sizes of the bounding boxes for the shape of the image
-  correct_yolo_boxes(boxes, image_h, image_w, input_h, input_w)
-
-  # suppress non-maximal boxes
-  do_nms(boxes, 0.5)
-
-  # get the details of the detected objects
-  v_boxes, v_labels, v_scores = get_boxes(boxes, labels, class_threshold)
-
-  # summarize what we found
-  for i in range(len(v_boxes)):
-    print(v_labels[i], v_scores[i])
-  
-  # draw what we found
-  draw_boxes(photo_filename, v_boxes, v_labels, v_scores)
 
 from google.colab.patches import cv2_imshow() 
 vs=cv2.VideoCapture(0)
